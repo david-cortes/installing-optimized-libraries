@@ -11,7 +11,7 @@ Roughly speaking, scientific libraries tend to be different from other libraries
 
 This guide provides some basic steps to set up the right software and configurations that are needed to install and get good performance out of libraries. At a high level, you'll typically want to do all of the following:
 
-1. [Install a compiler, and libraries related to compilers](https://github.com/david-cortes/installing-optimized-libraries#11-installing-a-compiler)
+1. [Install a compiler, and libraries related to compilers](https://github.com/david-cortes/installing-optimized-libraries#1-installing-a-compiler)
     * 1.2 [Installing additional python packages for compilations](https://github.com/david-cortes/installing-optimized-libraries#12-installing-additional-python-packages-for-compilation)
 2. [Configure the compiler to enable appropriate optimizations for your machine](https://github.com/david-cortes/installing-optimized-libraries#2-enabling-compiler-optimizations)
 3. [Install a good BLAS/LAPACK backend library and let libraries use it](https://github.com/david-cortes/installing-optimized-libraries#3-installing-a-good-blaslapack-backend)
@@ -529,6 +529,8 @@ threadpoolctl.threadpool_limits(
 ```
 
 # 4. (macOS) Install and enable OpenMP
+
+(**Note:** this is already configured automatically in other OSes. Skip this section if you don't use macOS)
 
 Most compilers for unix-alike systems out there offer support for the OpenMP standard for multi-threading (parallelization), with nowadays all major compilers (gcc, clang, icc, xlc, oracle's, among others) converging on enabling it through an argument `-fopenmp`, which many library developers assume will always be accepted.
 
