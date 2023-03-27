@@ -11,15 +11,15 @@ Roughly speaking, scientific libraries tend to be different from other libraries
 
 This guide provides some basic steps to set up the right software and configurations that are needed to install and get good performance out of libraries. At a high level, you'll typically want to do all of the following:
 
-1. [Install a compiler, and libraries related to compilers](https://github.com/david-cortes/installing-optimized-libraries#1.1-Installing-a-compiler)
-    * 1.2 [Installing additional python packages for compilations](https://github.com/david-cortes/installing-optimized-libraries#1.2-Installing-additional-python-packages-for-compilation)
-2. [Configure the compiler to enable appropriate optimizations for your machine](https://github.com/david-cortes/installing-optimized-libraries#2.-Enabling-compiler-optimizations)
-3. [Install a good BLAS/LAPACK backend library and let libraries use it](https://github.com/david-cortes/installing-optimized-libraries#Installing-a-good-BLAS/LAPACK-backend)
-    * [3.1 Enabling and disabling parallelism for BLAS/LAPACK](https://github.com/david-cortes/installing-optimized-libraries#3.1-Enabling-and-disabling-parallelism-for-BLAS/LAPACK)
-4. [(macOS) Install and enable OpenMP](https://github.com/david-cortes/installing-optimized-libraries#4.-(macOS)-Install-and-enable-OpenMP)
-5. [Configure default number of OpenMP threads](https://github.com/david-cortes/installing-optimized-libraries#Setting-up-the-number-of-OMP-threads)
-6. [(Much less critical) Try out a different malloc and libm](https://github.com/david-cortes/installing-optimized-libraries#Try-out-a-different-malloc-and-libm)
-7. [Install packages from source instead of using pre-compiled versions](https://github.com/david-cortes/installing-optimized-libraries#Installing-packages-from-source)
+1. [Install a compiler, and libraries related to compilers](https://github.com/david-cortes/installing-optimized-libraries#11-installing-a-compiler)
+    * 1.2 [Installing additional python packages for compilations](https://github.com/david-cortes/installing-optimized-libraries#12-installing-additional-python-packages-for-compilation)
+2. [Configure the compiler to enable appropriate optimizations for your machine](https://github.com/david-cortes/installing-optimized-libraries#2-enabling-compiler-optimizations)
+3. [Install a good BLAS/LAPACK backend library and let libraries use it](https://github.com/david-cortes/installing-optimized-libraries#3-installing-a-good-blaslapack-backend)
+    * [3.1 Enabling and disabling parallelism for BLAS/LAPACK](https://github.com/david-cortes/installing-optimized-libraries#31-enabling-and-disabling-parallelism-for-blaslapack)
+4. [(macOS) Install and enable OpenMP](https://github.com/david-cortes/installing-optimized-libraries#4-macos-install-and-enable-openmp)
+5. [Configure default number of OpenMP threads](https://github.com/david-cortes/installing-optimized-libraries#5-setting-up-the-number-of-omp-threads)
+6. [(Much less critical) Try out a different malloc and libm](https://github.com/david-cortes/installing-optimized-libraries#6-try-out-a-different-malloc-and-libm)
+7. [Install packages from source instead of using pre-compiled versions](https://github.com/david-cortes/installing-optimized-libraries#7-installing-packages-from-source)
 
 ************************************************
 
