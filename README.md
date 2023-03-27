@@ -113,7 +113,7 @@ Once you download it, you will need to go through its installer and pick, at a m
 
 For example, the following might be a good choice of things to install, but note that **the specific versions and components will change in the future** and this screenshot will become outdated as time passes - check the paragraphs above for a better idea:
 ![image](screenshots/msvc_installer1.png "msvc_installer1")
-![image](screenshots/msvc_installer1.png "msvc_installer2")
+![image](screenshots/msvc_installer2.png "msvc_installer2")
 
 (it doesn't hurt to install more things from there, but they can use quite a lot of disk space. If space is not a problem, consider installing whole packs from the menus in the installer)
 
