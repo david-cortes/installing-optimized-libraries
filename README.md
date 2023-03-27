@@ -23,9 +23,9 @@ This guide provides some basic steps to set up the right software and configurat
 
 ************************************************
 
-# 1.1 Installing a compiler
+# 1. Installing a compiler
 
-## Linux
+## (installing a compiler) Linux
 
 In linux systems, installing a compiler is typically a very trivial step - most linux distributions provide the `gcc` compiler through their package manager. Some distributions might bundle everything in a single package, while other might have separate packages for C, C++, Fortran, and others. To be sure, you can try something like this to ensure you have all the basics (C, C++, Fortran):
 
@@ -43,7 +43,7 @@ Note that, as far as scientific libraries are concerned, **`gcc` is usually the 
 
 For less-common platforms (e.g. IBM systems), one might also want to try vendor-specific compilers such as IBM's `xlC` for their PPC systems.
 
-### Python packages
+### (installing a compiler for linux) Python packages
 
 For Python packages, the default compiler can usually be changed by altering the same [environment variables that are used by the GNU build system](https://www.gnu.org/software/make/manual/html_node/Implicit-Variables.html) - for example, if you want to change the compiler to `clang` instead of `gcc` (_not recommended unless you have a good reason to_), something like this might do:
 ```shell
@@ -56,7 +56,7 @@ export FC=gfortran #clang doesn't do fortran
 
 **Note for users of redhat-based linux distributions:** it's highly recommended that you install a compiler like GCC from some some source _other_ than redhat's repositories as the software they package tends to be severly outdated and the compilers they offer might be too old to fully optimize code for a newer CPU.
 
-### R packages
+### (installing a compiler for linux) R packages
 
 For R packages, using a non-default compiler (**NOT recommended** unless you have a good reason to) requires setting up the variables described above in a file `~/.R/Makevars` (this is a simple text file that you will need to create if it doesn't exist already) **with the caveat that C++ compilers might need to be set for each standard** - example:
 ```
@@ -70,13 +70,13 @@ FC=gfortran
 FF=gfortran
 ```
 
-## Windows
+## (installing a compiler) Windows
 
-### For R packages
+### (installing a compiler for windows) For R packages
 
 If you wish to compile R packages from source, the best way is to download and install [RTools](https://cran.r-project.org/bin/windows/Rtools/) from CRAN on your system. This package includes everything that you will need to install packages from CRAN, and is automatically recognized by R when installing packages.
 
-### For Python packages
+### (installing a compiler for windows) For Python packages
 
 Setting a compiler on windows is a bit more involved than on other platforms. The easiest way of getting an already set-up environment is by installing the intel python distribution with all of its extras. However, you might not want to do so (e.g. if you have an AMD CPU or if you don't want unnecessary things), in which case you might want to install a compiler separately.
 
@@ -85,7 +85,7 @@ Typically, in windows, the most used compiler and the one that other people opti
 **Important check:** this guide assumes that you used `conda` to install python on windows. If you installed python through some other means, you might need additional steps. If you are not familiar with compilers and environments, it's highly recommended that you stick to Anaconda. When installing Anaconda, **be sure to tick this option** which is ticked-off by default in the installer **and is required for things to work smoothly:**
 ![image](screenshots/conda_windows_tick.png "conda_windows_tick")
 
-#### Pre-requisite: install python headers
+#### (installing a compiler for windows for python) Pre-requisite: install python headers
 
 A first step, regardless of the compiler that you'll be using, you need to install the python headers that will be needed to compile python extensions:
 ```shell
@@ -94,7 +94,7 @@ conda install libpython
 
 As per installing the compiler that will be building extensions:
 
-#### Option 1: Installing MSVC
+#### (installing a compiler for windows for python) Option 1: Installing MSVC
 
 The easiest way to get this compiler is by installing "Visual Studio Build Tools" from microsoft, which is likely to pop-up easily in a google search. At the time of writing (but note that the link might change in the future, so find "msvc build tools" in a search engine if it doesn't work) it was available under [this link](https://visualstudio.microsoft.com/downloads/) for download, but **be careful about what you click there!!**
 
@@ -126,11 +126,11 @@ python setup.py build_ext --inplace --force --compiler=msvc
 
 For a system-wide configuration, if it somehow doesn't get auto-configured, you might want to google about configuring a compiler in `setuptools` and `distutils`.
 
-#### Option 2: Installing MinGW
+#### (installing a compiler for windows for python) Option 2: Installing MinGW
 
 _Note: while this guide here says "MinGW", some google searches might reveal that there are multiple projects that call themselves "mingw", and that cython might name the one it can work with as "mingw32" even though it's not what their developers call "mingw32". For simplicity, this guide will not try to distinguish what is what, just point to what might work with a python install._
 
-##### Alternative 1 (might not work): use conda
+##### (installing mingw for python) Alternative 1 (might not work): use conda
 
 If you have an old computer or you are otherwise lucky enough, you might be able to install the `msys2` toolchain from conda:
 ```shell
@@ -139,7 +139,7 @@ conda install m2w64-toolchain
 
 but be aware that **at the time of writing this toolchain was unmaintained** and, even if it succeeds in installing, **it might crash once you try to use it** with real packages. See below for a more up-to-date alternative:
 
-##### Alternative 2: use the R toolchain
+##### (installing mingw for python) Alternative 2: use the R toolchain
 
 The same compiler toolchain that CRAN uses to build R packages can also be used for Python packages. It comes with everything that you will need in an easy installer so simply [download and install RTools](https://cran.r-project.org/bin/windows/Rtools/) from CRAN.
 
@@ -171,9 +171,9 @@ python setup.py build_ext --inplace --force --compiler=mingw32
 
 For a system-wide configuration, if it somehow doesn't get auto-configured, you might want to google about configuring a compiler in `setuptools` and `distutils`.
 
-## macOS
+## (installing a compiler) macOS
 
-### 1. Installing apple's stripped-down clang
+### (installing a compiler for macOS) 1. Installing apple's stripped-down clang
 
 On apple systems, the most common compiler (and the one most library developers target for this platform) is the apple version of clang which comes with `xcode-select`. It gets installed automatically alongside with other common programming software such as git, python, etc. when you try to execute the command in a terminal. That is, open a terminal and execute something like this:
 
@@ -194,7 +194,7 @@ Then it will offer you to install the whole `xcode-select` package if it's not a
 
 Note also that some standard headers for this stripped-down clang will be different than the LLVM-developed headers that the authentic clang ships. For best performance, consider switching to linux and to GCC.
 
-### 2. Installing GCC
+### (installing a compiler for macOS) 2. Installing GCC
 
 It is likely, especially if using python, that some packages will be unable to compile with apple's clang ([example that will fail to install from source](https://github.com/matrix-profile-foundation/matrixprofile)), so you'll probably want to additionally install GCC, which is available from brew:
 ```
@@ -335,7 +335,7 @@ To enable the optimizations that you'll typically want, you'll need to pass a fe
 
 For _some_ packages, if you are feeling lucky, you might additionally try out `-ffast-math` or even `-Ofast`, but be aware that these can lead to observing **significantly different (and sometimes stochastich) results/outputs** when calling library functions due to the kind of unsafe optimizations that they introduce - for example, `-Ofast` will make the compiler assume that NaN values will never be encountered, thus a function checking for NaN values will be assumed to always return "false" when these optimizations are enabled.
 
-## R packages
+## (compiler optimizations) R packages
 
 To pass flags to the compiler that will be used with R packages, you need to edit the file `~/.R/Makevars` (this is a simple text file - you'll need to create one if it doesn't exist). On windows, replace `~` with your user's folder (what you when executing `path.expand('~')` inside R). To add flags on top of what your global config already adds (which you should _not_ remove), you'll need to use `+=` instead of `=`. Note that, for C++, flags might need to be set on a per-standard basis:
 
@@ -355,7 +355,7 @@ For Fedora linux and other linux distributions that do not disable debug mode by
 CPPFLAGS += -DNDEBUG
 ```
 
-## Python packages
+## (compiler optimizations) Python packages
 
 For python packages, one can again use the same environment variables from the GNU build system (**important:** don't try these options for MSVC on windows).
 
@@ -407,27 +407,27 @@ A couple additional notes about BLAS/LAPACK implementations:
 
 R for Windows and macOS, as distributed by the R foundation, ships with its own unoptimized BLAS/LAPACK replacements, while on linux it uses the platform's default BLAS/LAPACK. Fortunately, it's possible to dynamically change its BLAS/LAPACK backend towards any library implementing the standard functions without re-installing anything. 
 
-### Windows
+### (BLAS/LAPACK for R) Windows
 
 On windows, R will install two key DLL files: `Rblas.dll` and `Rlapack.dll`. Replacing them with DLLs from different a library implementing each interface will do the trick (such DLLs can be obtained by downloading pre-built versions e.g. OpenBLAS for windows, or by downloading a pre-compiled NumPy wheel and extracting the DLLs that it ships).
 
 Note however that, if these DLLs are replaced with something with which R wasn't built, it will not be possible to install packages from source that use BLAS/LAPACK with the new DLLs - nevertheless, temporarily restoring the original DLLs and then replacing them later on (after the source package is installed) with the new optimized DLLs suffices for making source-installed packages use the more optimized version.
 
-#### Alternative 1: OpenBLAS
+#### (BLAS/LAPACK for R for windows) Alternative 1: OpenBLAS
 
 Follow [this guide](https://github.com/david-cortes/R-openblas-in-windows).
 
-#### Alternative 2: MKL
+#### (BLAS/LAPACK for R for windows) Alternative 2: MKL
 
 At some point, there was a Microsoft R distribution ("MRAN") which shipped with MKL preinstalled. This distribution was discontinued later on and thus there aren't any builds for newer R versions, but if one can find older installers from it, regardless of the R version they use, it's possible to install it in a computer, save/copy their DLL files (`Rblas.dll`, `Rlapack.dll`, and anything saying "MKL"), uninstall it, install the R distributed by the R foundation, and copy over those DLL files into the new installation (be aware that the MKL versions might be old and might not run optimally on newer CPUs).
 
 See the link above for information about where to find these DLLs in an R installation.
 
-#### Alternative 3: conda (not recommended)
+#### (BLAS/LAPACK for R for windows) Alternative 3: conda (not recommended)
 
 While typically used alongside with Python, it's also possible to install R through `conda` and pick user builds from `conda-forge` shipping a different BLAS library. Instructions for doing so are beyond the scope of this guide.
 
-### Linux
+### (BLAS/LAPACK for R) Linux
 
 On most linux distributions and unix-alike systems like freebsd, R will take the default system's BLAS/LAPACK, which can be changed at any time. For debian-based systems, this is controlled through the debian alternatives system, while for redhat-based systems it might involve creating symlinks in appropriate places.
 
@@ -449,7 +449,7 @@ Configuring OpenBLAS-OpenMP or MKL on redhat systems is beyond the scope of this
 
 **IMPORTANT:** redhat systems typically have very outdated software. If installing OpenBLAS from a redhat repository, chances are that the version it ships will be so old that it will not have support for the CPU in which its executed (assuming a reasonably new machine). One might want to install these software from other sources, but note that redhat's R distribution will not play along with a cmake-installed OpenBLAS. Consider switching to Debian for less hassle.
 
-### macOS
+### (BLAS/LAPACK for R) macOS
 
 By default, macOS ships with something called the "apple accelerate framework", which includes a BLAS library ("veclib"). On ARM systems manufactured by apple, this is the only library that will present reasonable performance, due to being able to use undisclosed functionalities of such CPUs which apple [doesn't share with the open source community](https://github.com/xianyi/OpenBLAS/issues/3789) and thus prevents open-source developers from producing good libraries for their systems.
 
@@ -543,13 +543,13 @@ As a first step, you'll need to install LLVM's `libomp`:
 brew install libomp
 ```
 
-## Enabling OMP for R packages
+## (macOS + OMP) Enabling OMP for R packages
 
 **Note:** There is a [CRAN guide](https://mac.r-project.org/openmp) for how to do this, and CRAN offers its own versions of compilers, headers, and OMP library for R. Nevertheless, you _might_ still want to use the software provided by `brew` if e.g. you have an ARM CPU, or you want more up-to-date versions, or automated updates, among other reasons. if you decide to follow CRAN's instructions, then skip this part.
 
 Alternatively, if this guide becomes outdated at some point, there's a more comprehensive [guide provided by data.table](https://github.com/Rdatatable/data.table/wiki/Installation) that's more likely to be up-to-date.
 
-### Alternative 1: using apple's clang
+### (macOS + OMP + R) Alternative 1: using apple's clang
 
 Depending on how `brew` installed `libomp`, you _might_ or _might not_ need to figure out where it installed the library:
 ```shell
@@ -576,7 +576,7 @@ CXX17FLAGS += -Xclang -fopenmp
 CXX20FLAGS += -Xclang -fopenmp
 ```
 
-### Alternative 2: using GNU's GCC
+### (macOS + OMP + R) Alternative 2: using GNU's GCC
 
 As a different alternative, one might switch the compiler entirely to GCC - see the beginning of this guide for more details about setting up the compiler. Note that, if you decide to use GCC as compiler, it's highly recommended that you install every single package from source to avoid incompatibilities, as CRAN builds its binary packages with apple's clang.
 
@@ -605,13 +605,13 @@ CXX20FLAGS += -fopenmp
 
 **IMPORTANT:** this configuration only applies to new packages that are **compiled from source** after these modifications to your `~/.R/Makevars` file. Packages that are already installed **will not start automatically using OpenMP** after these changes, and _binary_ packages installed from CRAN will most certainly not be able to use OpenMP.
 
-## Enabling OMP for Python packages
+## (macOS + OMP) Enabling OMP for Python packages
 
 In the case of Python packages, the build system is not as standardized or as comprehensive as in R, and the main package repository (PyPI) doesn't have requirements on how OMP linkage should be specified the same way CRAN does for R packages.
 
 This means that it's not possible to come up with a reliable way of enabling OpenMP for all packages out there that support it. Nevertheless, the following might help:
 
-### Case 1: packages that forego OMP support in macOS
+### (macOS + OMP + Python) Case 1: packages that forego OMP support in macOS
 
 Due to the big hassle that is enabling automated support for OpenMP in a build script for macOS and the high degree of instability of the mechanisms to achieve this, many packages have opted for simply disabling OpenMP when a user tries to compile said package from source on an apple device. Example such packages include `scikit-learn` or `glum`.
 
@@ -626,7 +626,7 @@ LDFLAGS="-lomp -L$(brew --prefix libomp)/lib ${LDFLAGS}" \
 python3 -m pip install --no-binary=glum glum
 ```
 
-### Case 2: packages that assume `-fopenmp` is available
+### (macOS + OMP + Python) Case 2: packages that assume `-fopenmp` is available
 
 As the python build system doesn't have a common "add OMP" macro the same way R does, some developers might assume that argument `-fopenmp` will always work (which it does in every other OS). If some package has a `setup.py` script with hard-coded `-fopenmp` argument (example: `matrixprofile`), the trick above won't do, but in this case, it's possible to switch the compiler to GNU's GCC which does take the argument. See the beginning of this guide for more details about setting up a compiler on macOS.
 
@@ -635,7 +635,7 @@ Assuming you installed GCC with `brew` and it installed version 12 (you'll need 
 CC="gcc-12" CXX="g++-12" python3 -m pip install --no-binary=matrixprofile matrixprofile
 ```
 
-### Other cases
+### (macOS + OMP + Python) Other cases
 
 In other cases (e.g. `pybind11` using the cmake system), you might need to tinker with the build scripts of packages individually. For _some_ packages it might help to have the latest versions of `cmake`, `make`, and `autoconf` installed. Otherwise, you might be out of luck depending on how a given package or its build system were designed. Consider switching to linux.
 
