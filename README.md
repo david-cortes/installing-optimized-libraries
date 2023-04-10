@@ -433,13 +433,46 @@ On most linux distributions and unix-alike systems like freebsd, R will take the
 
 #### Debian and derivatives
 
-In a fresh debian install, if there is no BLAS/LAPACK already installed, the first such alternative that one installs will become the default. If some package needs BLAS linkage and none is installed, `apt` will first and foremost prefer `openblas-pthreads`, which is not as optimal. In order to get `openblas-openmp` from the get-to, one can install it like this:
+In a fresh debian install, if there is no BLAS/LAPACK already installed, the first such alternative that one installs will become the default. If some package needs BLAS linkage and none is installed, `apt` will first and foremost prefer `openblas-pthreads`, which is not as optimal.
+
+In order to get `openblas-openmp` from the get-to, one can install it like this:
 
 ```shell
 sudo apt-get install libopenblas-openmp-dev
 ```
 
-For MKL, one can [follow Dirk's guide](https://github.com/eddelbuettel/mkl4deb) for installing it on debian, which also contains an example of changing the default BLAS/LAPACK backend through the debian alternatives system.
+Alternatively, one can also install intel's MKL following the [instructions on their website]():
+```shell
+wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB \
+| gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
+echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+sudo apt update
+sudo apt install intel-oneapi-mkl
+```
+
+(You might also want to install package `intel-oneapi-mkl-devel`).
+
+
+After installing MKL (or if you accidentally already installed `openblas-pthreads` and want `openblas-openmp`), you might want to configure it to be your system's default BLAS and default LAPACK, which can be achieved either from a GUI like `kalternatives` ir from the CLI - **make sure to select your desired library (e.g. MKL)** in each of these prompts:
+```shell
+sudo update-alternatives --config libblas.so-x86_64-linux-gnu
+sudo update-alternatives --config libblas.so.3-x86_64-linux-gnu
+sudo update-alternatives --config liblapack.so-x86_64-linux-gnu
+sudo update-alternatives --config liblapack.so.3-x86_64-linux-gnu
+```
+
+Additionally, you will need to add the folder where the library stores its files (make sure that the path written here matches with what was shown in `update-alternatives`) to your linker's config:
+```shell
+sudo touch /etc/ld.so.conf.d/mkl.conf
+printf "/opt/intel/oneapi/mkl/latest/lib/intel64\n" | sudo tee -a /etc/ld.so.conf.d/mkl.conf
+printf "/opt/intel/oneapi/mkl/latest/lib/intel64\n" | sudo tee -a /etc/ld.so.conf.d/mkl.conf
+sudo ldconfig
+```
+
+And for R in specific, you'll need to set variable `MKL_THREADING_LAYER` to play along with OpenMP **in a system-wide sourceable file** (`~/.profile` won't do):
+```shell
+printf "MKL_THREADING_LAYER=GNU\n" | sudo tee -a /etc/environment
+```
 
 #### Redhat-based systems
 
