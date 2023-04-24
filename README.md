@@ -469,7 +469,7 @@ printf "/opt/intel/oneapi/mkl/latest/lib/intel64\n" | sudo tee -a /etc/ld.so.con
 sudo ldconfig
 ```
 
-And for R in specific, you'll need to set variable `MKL_THREADING_LAYER` to play along with OpenMP **in a system-wide sourceable file** (`~/.profile` won't do):
+And for RStudio Server in specific, you'll need to set variable `MKL_THREADING_LAYER` to play along with OpenMP **in a system-wide sourceable file** (`~/.profile` won't do for RStudio Server, but is enough for desktop RStudio):
 ```shell
 printf "MKL_THREADING_LAYER=GNU\n" | sudo tee -a /etc/environment
 ```
