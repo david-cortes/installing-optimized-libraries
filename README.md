@@ -409,7 +409,7 @@ R for Windows and macOS, as distributed by the R foundation, ships with its own 
 
 ### (BLAS/LAPACK for R) Windows
 
-On windows, R will install two key DLL files: `Rblas.dll` and `Rlapack.dll`. Replacing them with DLLs from different a library implementing each interface will do the trick (such DLLs can be obtained by downloading pre-built versions e.g. OpenBLAS for windows, or by downloading a pre-compiled NumPy wheel and extracting the DLLs that it ships).
+On windows, R will install two key DLL files: `Rblas.dll` and `Rlapack.dll`. Replacing them with DLLs from different a library implementing each interface will do the trick (such DLLs can be obtained by downloading pre-built versions of e.g. OpenBLAS for windows and extracting the DLLs that it ships).
 
 Note however that, if these DLLs are replaced with something with which R wasn't built, it will not be possible to install packages from source that use BLAS/LAPACK with the new DLLs - nevertheless, temporarily restoring the original DLLs and then replacing them later on (after the source package is installed) with the new optimized DLLs suffices for making source-installed packages use the more optimized version.
 
