@@ -330,7 +330,7 @@ Most typically, **compilers produce code that might run slower than it ought to 
 To enable the optimizations that you'll typically want, you'll need to pass a few flags to the compiler. Assuming you have either `gcc` or `clang` as compiler, you might want the following:
 * `-march=native` (for ARM and PPC systems, replace with `-mcpu=native`). This enables the highest-supported SIMD instructions for the computer where it is being compiled.
 * `-O3`. This lets the compiler do some potentially unsafe optimizations within reasonable limits. It is the default for cython-compiled packages and for cmake's release-level compilations, but for R this is set at `-O2`.
-* `-flto=auto` (for mingw, replace with `-flto`). This enables link-time optimization that gets parallelized while compiling. `-flto` (without the parallelization during compilation, which leads to the same result but is slower while installing) is the default for R packages, but not for python packages.
+* `-flto=auto` (for mingw and for single-file commands, replace with `-flto`). This enables link-time optimization, which gets parallelized while compiling if passing the `=auto` part (result should be identical with and without, but `-flto=auto` should take less time to build packages as it uses parallelism).
 * `-fno-math-errno -fno-trapping-math`. These disable the floating point exceptions system.
 
 For _some_ packages, if you are feeling lucky, you might additionally try out `-ffast-math` or even `-Ofast`, but be aware that these can lead to observing **significantly different (and sometimes stochastich) results/outputs** when calling library functions due to the kind of unsafe optimizations that they introduce - for example, `-Ofast` will make the compiler assume that NaN values will never be encountered, thus a function checking for NaN values will be assumed to always return "false" when these optimizations are enabled.
@@ -340,17 +340,33 @@ For _some_ packages, if you are feeling lucky, you might additionally try out `-
 To pass flags to the compiler that will be used with R packages, you need to edit the file `~/.R/Makevars` (this is a simple text file - you'll need to create one if it doesn't exist). On windows, replace `~` with your user's folder (what you when executing `path.expand('~')` inside R). To add flags on top of what your global config already adds (which you should _not_ remove), you'll need to use `+=` instead of `=`. Note that, for C++, flags might need to be set on a per-standard basis:
 
 ```
-CFLAGS += -O3 -march=native -fno-math-errno -fno-trapping-math
-FCFLAGS += -O3 -march=native -fno-math-errno -fno-trapping-math
-FFLAGS += -O3 -march=native -fno-math-errno -fno-trapping-math
-CXXFLAGS += -O3 -march=native -fno-math-errno -fno-trapping-math
-CXX11FLAGS += -O3 -march=native -fno-math-errno -fno-trapping-math
-CXX14FLAGS += -O3 -march=native -fno-math-errno -fno-trapping-math
-CXX17FLAGS += -O3 -march=native -fno-math-errno -fno-trapping-math
-CXX20FLAGS += -O3 -march=native -fno-math-errno -fno-trapping-math
+CFLAGS += -O3 -march=native -fno-math-errno -fno-trapping-math -flto
+FCFLAGS += -O3 -march=native -fno-math-errno -fno-trapping-math -flto
+FFLAGS += -O3 -march=native -fno-math-errno -fno-trapping-math -flto
+CXXFLAGS += -O3 -march=native -fno-math-errno -fno-trapping-math -flto
+CXX11FLAGS += -O3 -march=native -fno-math-errno -fno-trapping-math -flto
+CXX14FLAGS += -O3 -march=native -fno-math-errno -fno-trapping-math -flto
+CXX17FLAGS += -O3 -march=native -fno-math-errno -fno-trapping-math -flto
+CXX20FLAGS += -O3 -march=native -fno-math-errno -fno-trapping-math -flto
+
+PKG_LIBS += -flto=auto
 ```
 
-For Fedora linux and other linux distributions that do not disable debug mode by default (not applicable to debian and derivatives), you _might_ additionally need to set this extra line:
+**IMPORTANT!!**: in **windows**, replace the last line with:
+```
+PKG_LIBS += -flto
+```
+
+**Optionally**, but highly recommended, one can make compilation of multiple source files run in parallel **in unix-alike systems** (e.g. linux, but not windows) by adding a line like this:
+```
+MAKEFLAGS += -j$(nproc)
+```
+
+(for apple systems, replace `$(nproc)` with the number of threads supported by your CPU - e.g. `MAKEFLAGS += -j10` if your CPU has 10 threads)
+
+This parallel compilation (i.e. `install.packages` runs faster as it uses parallelism) might however lead to different binaries if the package in question has a very complicated build system that pre-links compiled objects manually before creating the final R library (**not** applicable to most packages).
+
+For Fedora linux and other linux distributions that do not disable debug mode by default (not applicable to e.g. debian and derivatives), you _might_ additionally need to set this extra line:
 ```
 CPPFLAGS += -DNDEBUG
 ```
