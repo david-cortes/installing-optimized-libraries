@@ -357,6 +357,8 @@ PKG_LIBS += -flto=auto
 PKG_LIBS += -flto
 ```
 
+And in PPC and ARM (e.g. apple m1) systems, replace `-march=native` with `-mcpu=native`.
+
 **Optionally**, but highly recommended, one can make compilation of multiple source files run in parallel **in unix-alike systems** (e.g. linux, but not windows) by adding a line like this:
 ```
 MAKEFLAGS += -j$(nproc)
