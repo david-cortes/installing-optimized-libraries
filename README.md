@@ -385,6 +385,8 @@ export FFLAGS="-O3 -march=native -fno-math-errno -fno-trapping-math -flto"
 export LDFLAGS="-flto=auto"
 ```
 
+(for PPC and ARM systems (e.g. apple m1), replace `-march=native` with `-mcpu=native`)
+
 Plus the extra line for Fedora and similar (not needed for debian and derivatives):
 ```shell
 export CPPFLAGS="-DNDEBUG"
