@@ -377,7 +377,7 @@ CPPFLAGS += -DNDEBUG
 
 For python packages, one can again use the same environment variables from the GNU build system (**important:** don't try these options for MSVC on windows).
 
-Assuming a linux or unix-alike system, these might be set by executing commands like the following in a terminal:
+Assuming a linux or unix-alike system (e.g. macOS, but **not** windows), these might be set by executing commands like the following in a terminal:
 ```shell
 export CFLAGS="-O3 -march=native -fno-math-errno -fno-trapping-math -flto"
 export CXXFLAGS="-O3 -march=native -fno-math-errno -fno-trapping-math -flto"
@@ -396,7 +396,7 @@ export CPPFLAGS="-DNDEBUG"
 
 To make these environment variables permanent, you'll need to add those lines to some file that would get sourced by shells, such as `~/.profile`, `~/.bashrc` (if using `bash` as shell, which is the default in most desktop linux distributions), `~/.zshrc` (if using `zsh`, which is the default on apple systems), or `/etc/environment` (note that this is a non-user file).
 
-For windows, environment variables need to be set through the control panel. See the screenshots from previous sections of this guide for an example of how to set environment variables on windows.
+**For windows**, environment variables need to be set through the control panel. See the screenshots from previous sections of this guide for an example of how to set environment variables on windows. Note that, if using MinGW, you'll need to replace that last `-flto=auto` with just `-flto`.
 
 
 # 3. Installing a good BLAS/LAPACK backend
