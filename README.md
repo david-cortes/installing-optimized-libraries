@@ -461,11 +461,14 @@ In order to get `openblas-openmp` from the get-to, one can install it like this:
 sudo apt-get install libopenblas-openmp-dev
 ```
 
-Alternatively, one can also install intel's MKL following the [instructions on their website]():
+Alternatively, one can also install intel's MKL following the [instructions on their website](https://www.intel.com/content/www/us/en/docs/oneapi/installation-guide-linux/2024-0/apt.html#GUID-B1770241-0BBB-4E9C-B85B-9268CA66F15C):
 ```shell
+# download the key to system keyring
 wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB \
 | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
+# add signed entry to apt sources and configure the APT client to use Intel repository:
 echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+
 sudo apt update
 sudo apt install intel-oneapi-mkl
 ```
@@ -485,7 +488,6 @@ Additionally, you will need to add the folder where the library stores its files
 ```shell
 sudo touch /etc/ld.so.conf.d/mkl.conf
 printf "/opt/intel/oneapi/mkl/latest/lib/intel64\n" | sudo tee -a /etc/ld.so.conf.d/mkl.conf
-printf "/opt/intel/oneapi/mkl/latest/lib/intel64\n" | sudo tee -a /etc/ld.so.conf.d/mkl.conf
 sudo ldconfig
 ```
 
@@ -493,6 +495,8 @@ And for RStudio Server in specific, you'll need to set variable `MKL_THREADING_L
 ```shell
 printf "MKL_THREADING_LAYER=GNU\n" | sudo tee -a /etc/environment
 ```
+
+(setting up this environment variable is also advisable for Python use-cases)
 
 #### Redhat-based systems
 
