@@ -420,7 +420,7 @@ There are other open-source options out there (e.g. BLIS, ATLAS), but typically 
 
 A couple additional notes about BLAS/LAPACK implementations:
 
-* If using MKL, the library is usually able to discern when it is run in an OpenMP parallel block, even though its default parallelization backend is intel's TBB. However, in some cases, there might be problems (e.g. manifesting as incorrect calculations) when MKL with its TBB backend is used alongside with software that uses OpenMP, so one might want to force MKL to use OpenMP to play along with the rest of the libraries. This can be accomplished by setting environment variable `MKL_THREADING_LAYER=GNU` **before the library is loaded**.
+* If using MKL, the library is usually able to discern when it is run in an OpenMP parallel block, even though its default parallelization backend is intel's TBB. However, in some cases, there might be problems (e.g. manifesting as incorrect calculations) when MKL with its TBB backend is used alongside with software that uses OpenMP, so one might want to force MKL to use OpenMP to play along with the rest of the libraries. This can be accomplished by setting environment variable `MKL_THREADING_LAYER=GNU` **before the library is loaded** (on newer versions, might also require something like `MKL_INTERFACE_LAYER=GNU`).
 * When some library uses OpenMP as parallelization backend, and the system uses GNU's `libgomp` as the OMP implementation, **the process will hang if any parallelization is attempted inside a forked process**. This concerns for example libraries for HTTP services like `gunicorn` (python) or `RestRserve` (R) which run each request in a forked process, or some parallel backends for e.g. `joblib` (python) or `parallel` (R). As a workaround, one can try to disable all parallelization in the libraries being used, or compile all the offending libraries using LLVM's `clang` + `libomp` (a fork of intel's `libiomp`) instead of `gcc` + `libgomp`. 
 * If some library is using TBB instead of OpenMP for parallelization (this is very uncommon in scientific software, but it is done by numba-based libraries such as LensKit), only intel's MKL is able to play along with external parallelization. For other libraries, one might want to manually disable multi-threading if the library is going to be used inside a TBB-parallelized block. This can be achieved with environment variables (typically `OMP_NUM_THREADS=1`) or software like `threadpoolctl` (Python) or `RhpcBLASctl` (R).
 * Some libraries - most notably, SparseSuite and its components such as Cholmod (used by e.g. R's `Matrix` package) - benefit from having a BLAS backend that's able to properly handle internal parallelization in combination with external OMP-based parallelization. A backend like OpenBLAS is likely to be very slow in these cases due not being able to adjust its parallelization, so one might want to use MKL regardless of CPU vendor (assuming `amd64` machines) when coupled with such software.
@@ -495,9 +495,10 @@ printf "/opt/intel/oneapi/mkl/latest/lib/intel64\n" | sudo tee -a /etc/ld.so.con
 sudo ldconfig
 ```
 
-And for RStudio Server in specific, you'll need to set variable `MKL_THREADING_LAYER` to play along with OpenMP **in a system-wide sourceable file** (`~/.profile` won't do for RStudio Server, but is enough for desktop RStudio):
+And for RStudio Server in specific, you'll need to set variable `MKL_THREADING_LAYER` and `MKL_INTERFACE_LAYER` to play along with OpenMP **in a system-wide sourceable file** (`~/.profile` won't do for RStudio Server, but is enough for desktop RStudio):
 ```shell
 printf "MKL_THREADING_LAYER=GNU\n" | sudo tee -a /etc/environment
+printf "MKL_INTERFACE_LAYER=\"GNU,LP64\"\n" | sudo tee -a /etc/environment
 ```
 
 (setting up this environment variable is also advisable for Python use-cases)
@@ -539,6 +540,12 @@ NumPy itself can be built with different BLAS/LAPACK backends when compiled from
 * NumPy from the Debian main repository is likely to use the system's BLAS.
 
 Unlike R, changing the BLAS/LAPACK of a NumPy installation typically requires installing a new NumPy version configured to use the desired library. Instructions for doing so from a source installation can be found on the NumPy website and are outside the scope of this guide.
+
+In terms of configuring a BLAS backend like MKL to work alongside with the rest of the Python scientific stack (e.g. OpenMP usage in packages), one might not want to write on system-wide environment configuration variables that can get overriden during system updates, but for example, environment variables that are required before a BLAS library is loaded can be put in files like `~/.profile` or `~/.bashrc`. For example, assuming that one has a Linux system with `bash` as shell, adding the following lines at the end of one's `~/.bashrc` file would do:
+```shell
+export MKL_INTERFACE_LAYER="GNU,LP64"
+export MKL_THREADING_LAYER=GNU
+```
 
 ### Switching between MKL and OpenBLAS-pthreads in conda
 
