@@ -337,7 +337,11 @@ For _some_ packages, if you are feeling lucky, you might additionally try out `-
 
 ## (compiler optimizations) R packages
 
-To pass flags to the compiler that will be used with R packages, you need to edit the file `~/.R/Makevars` (this is a simple text file - you'll need to create one if it doesn't exist). On windows, replace `~` with your user's folder (what you when executing `path.expand('~')` inside R). To add flags on top of what your global config already adds (which you should _not_ remove), you'll need to use `+=` instead of `=`. Note that, for C++, flags might need to be set on a per-standard basis:
+To pass flags to the compiler that will be used with R packages, you need to edit the file `~/.R/Makevars` (this is a simple text file - you'll need to create it if it doesn't exist, through e.g. `touch ~/.R/Makevars` if using Linux or mac).
+
+On windows, replace `~` with your user's folder (what you when executing `path.expand('~')` inside R) - e.g. if you installed R with all the default options, you'll need to create an empty text file named `Makevars` (or alternatively, `Makevars.win`), putting it in a path like `C:/Users/%USERNAME%/Documents` (but change that path if it's not what you see when executing `path.expand('~')` in R).
+
+To add flags on top of what your global config already adds (which you should _not_ remove), you'll need to use `+=` instead of `=`. Note that, for C++, flags might need to be set on a per-standard basis:
 
 ```
 CFLAGS += -O3 -march=native -fno-math-errno -fno-trapping-math -flto
