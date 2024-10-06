@@ -39,6 +39,11 @@ sudo apt-get install gcc g++ gfortran
 sudo yum install gcc gcc-g++ gcc-gfortran
 ```
 
+Alternatively, can also be installed from `conda` (or `mamba`):
+```
+conda install gcc gxx gfortran c-compiler cxx-compiler
+```
+
 Note that, as far as scientific libraries are concerned, **`gcc` is usually the compiler that produces the best results** (i.e. fastest-running libraries) and the one that is less likely to fail to compile code found in the wild from smaller libraries. Most systems will default to have `gcc` as their default compiler even if something else is installed.
 
 For less-common platforms (e.g. IBM systems), one might also want to try vendor-specific compilers such as IBM's `xlC` for their PPC systems.
@@ -96,7 +101,13 @@ As per installing the compiler that will be building extensions:
 
 #### (installing a compiler for windows for python) Option 1: Installing MSVC
 
-The easiest way to get this compiler is by installing "Visual Studio Build Tools" from microsoft, which is likely to pop-up easily in a google search. At the time of writing (but note that the link might change in the future, so find "msvc build tools" in a search engine if it doesn't work) it was available under [this link](https://visualstudio.microsoft.com/downloads/) for download, but **be careful about what you click there!!**
+The easiest way to get this compiler is through `conda`:
+```
+conda config --append channels conda-forge
+conda install -c conda-forge c-compiler cxx-compiler
+```
+
+Alternatively, if not using conda or if one wishes to have a system-wide install, can also be obtained by installing "Visual Studio Build Tools" from microsoft, which is likely to pop-up easily in a google search. At the time of writing (but note that the link might change in the future, so find "msvc build tools" in a search engine if it doesn't work) it was available under [this link](https://visualstudio.microsoft.com/downloads/) for download, but **be careful about what you click there!!**
 
 The microsoft web page above might present dark patterns that will try to trick you into installing some paid visual studio product. Be sure to **only** download something saying **"build tools"** (note that "visual studio tools" is also a different thing), which is likely to be hidden in the web page under many buttons. Depending on the day that you visit that page, build tools might be under the following menus:
 ![image](screenshots/msvc_page1.png "msvc_page1")
@@ -126,7 +137,21 @@ python setup.py build_ext --inplace --force --compiler=msvc
 
 For a system-wide configuration, if it somehow doesn't get auto-configured, you might want to google about configuring a compiler in `setuptools` and `distutils`.
 
-#### (installing a compiler for windows for python) Option 2: Installing MinGW
+#### (installing a compiler for windows for python) Option 2: Installing CLANG
+
+Easiest way to install `clang` for windows is through `conda`:
+```
+conda config --append channels conda-forge
+conda install -c conda-forge clang clangxx flang
+```
+
+Otherwise, can also be installed through the same "Visual Studio Build Tools" by checking the appropriate boxes for `clang`.
+
+As yet another alternative, it can be installed through the "Intel Python distribution" (which is `conda` with extra pre-installed packages).
+
+Note that there might be strange incompatibilities sometimes if mixing `clang` and `msvc` for different C++ libraries.
+
+#### (installing a compiler for windows for python) Option 3: Installing MinGW
 
 _Note: while this guide here says "MinGW", some google searches might reveal that there are multiple projects that call themselves "mingw", and that cython might name the one it can work with as "mingw32" even though it's not what their developers call "mingw32". For simplicity, this guide will not try to distinguish what is what, just point to what might work with a python install._
 
@@ -451,6 +476,17 @@ See the link above for information about where to find these DLLs in an R instal
 
 While typically used alongside with Python, it's also possible to install R through `conda` and pick user builds from `conda-forge` shipping a different BLAS library. Instructions for doing so are beyond the scope of this guide.
 
+In order to ensure that a given `conda` environment will use OpenBLAS, with the faster OpenMP variant, one can try something like the following:
+```shell
+conda install -c conda-forge blas=*=*openblas* libopenblas=*=openmp* nomkl
+```
+
+For MKL, if one wishes to get the latest version in a `conda` environment and register it as the BLAS backend there, one can also try getting it directly from intel's `conda` channel:
+```shell
+conda config --add channels https://software.repos.intel.com/python/conda/
+conda create -n env_mklblas -c https://software.repos.intel.com/python/conda/ mkl mkl-devel libblas=*=*mkl
+```
+
 ### (BLAS/LAPACK for R) Linux
 
 On most linux distributions and unix-alike systems like freebsd, R will take the default system's BLAS/LAPACK, which can be changed at any time. For debian-based systems, this is controlled through the debian alternatives system, while for redhat-based systems it might involve creating symlinks in appropriate places.
@@ -507,6 +543,8 @@ printf "MKL_INTERFACE_LAYER=\"GNU,LP64\"\n" | sudo tee -a /etc/environment
 
 On redhat-based systems, the handling of this type of software is rather different than on Debian. Installing `libopenblas` on redhat systems will typically install something that bundles all of its variants together (e.g. pthread, openmp, i32, i64, etc.), but which has the pthreads/i32 version as its default just like debian does.
 
+A perhaps better way of installing libraries in RedHat systems is through `conda`, but these installs are tied to conda environments.
+
 Configuring OpenBLAS-OpenMP or MKL on redhat systems is beyond the scope of this guide, but some google searches about it might help.
 
 **IMPORTANT:** redhat systems typically have very outdated software. If installing OpenBLAS from a redhat repository, chances are that the version it ships will be so old that it will not have support for the CPU in which its executed (assuming a reasonably new machine). One might want to install these software from other sources, but note that redhat's R distribution will not play along with a cmake-installed OpenBLAS. Consider switching to Debian for less hassle.
@@ -547,15 +585,30 @@ export MKL_INTERFACE_LAYER="GNU,LP64"
 export MKL_THREADING_LAYER=GNU
 ```
 
-### Switching between MKL and OpenBLAS-pthreads in conda
+### Switching between MKL, OpenBLAS-pthreads, and OpenBLAS-openmp in conda
 
-In the `amd64` Anaconda distribution for Linux and macOS, it's possible to switch the underlying BLAS/LAPACK used in a given conda environment from the default MKL towards OpenBLAS-pthreads by first uninstalling packages like numpy/scipy/mkl, then installing the (**conda**) `nomkl` package, and then reinstalling again those packages (which in the presence of `nomkl` will now pull different versions that link against openblas).
+In the `amd64` Anaconda distribution for Linux and macOS, it's possible to switch the underlying BLAS/LAPACK used in a given conda environment from the default MKL towards OpenBLAS-pthreads or OpenBLAS-openmp by first uninstalling packages like numpy/scipy/mkl, then installing the (**conda**) `nomkl` package, and then reinstalling again those packages (which in the presence of `nomkl` will now pull different versions that link against openblas).
 
-This is typically not advantageous when using intel processors, but can make a positive difference for AMD processors.
+With `conda-forge` packages, the BLAS backend for many of them might also be switchable through the variant of `libblas` and/or `libopenblas` that they install, such as `libblas=*=mkl` or `libopenblas=*=openmp*`.
 
-In order to create a new conda environment backed by OpenBLAS, one can do something like the following:
+Switching from MKL to OpenBLAS is typically not advantageous when using intel processors, but can make a positive difference for AMD and other `amd64`-compatible processors (a.k.a. `x86_64`), and it's a fully open-source alternative unlike MKL if that aspect is important.
+
+In order to create a new conda environment backed by OpenBLAS-pthreads (not recommended, try the openmp variant instead), one can do something like the following:
 ```shell
-conda create -n env_openblas nomkl numpy scipy
+conda create -n env_openblas nomkl python numpy scipy
+```
+
+For the (better, faster) OpenBLAS-openmp variant, one can do the following instead:
+```shell
+conda create -n env_openblas -c conda-forge nomkl python numpy scipy libopenblas=*=openmp* blas=*=*openblas*
+```
+
+.. careful however that, if having the default `anaconda` channel as the one with highest priority, `conda install` of other packages might try to switch the openblas backend to the `pthreads` version, so be sure to append the `-c conda-forge` if needed and/or switch channel priorities or use `--strict-channel-priority`.
+
+If one wishes to get the latest version of MKL (recommended for newer CPUs), or to make sure that the environment is fully configured to have MKL as the BLAS backend (not only for python), it's also possible to get it directly from intel's conda channel:
+```shell
+conda config --add channels https://software.repos.intel.com/python/conda/
+conda create -n env_mkl -c https://software.repos.intel.com/python/conda/ python mkl mkl-devel libblas=*=*mkl numpy scipy
 ```
 
 # 3.1 Enabling and disabling parallelism for BLAS/LAPACK
